@@ -1,45 +1,35 @@
 package com.example.foodmanagement.model.entity;
-import java.time.LocalDate;
 
-import jakarta.persistence.Column;
+import java.util.HashSet;
+import java.util.Set;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 import lombok.Data;
 
 @Entity
-@Table(name = "food_items")
+@Table(name = "food_master")
 @Data
-public class FoodItems {
+public class FoodMaster {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	
 	private String name;
 	
-	private Double quantity;
-	
 	private String unit;
-	
-	@Column(name = "purchase_date")
-	private LocalDate purchaseDate;
-	
-	@Column(name = "expiration_date")
-	private LocalDate expirationDate;
-	
-	@Column(name = "storage_method")
-	private String storageMethod;
 	
 	@ManyToOne
 	@JoinColumn(name = "category_id")
-	private Categories categoryId;
+	private Categories category;
 	
-	@ManyToOne
-	@JoinColumn(name = "user_id")
-	private Users userId;
+	@ManyToMany(mappedBy = "stockFood")
+    private Set<Users> user = new HashSet<>();
 }

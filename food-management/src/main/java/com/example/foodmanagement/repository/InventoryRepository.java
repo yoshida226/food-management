@@ -6,9 +6,9 @@ import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import com.example.foodmanagement.model.entity.FoodItems;
+import com.example.foodmanagement.model.entity.Inventory;
 
 @Repository
-public interface FoodItemsRepository extends JpaRepository<FoodItems, Long> {
-	public List<FoodItems> findByExpirationDateLessThan(LocalDate expirationDate);
+public interface InventoryRepository extends JpaRepository<Inventory, Long> {
+	public List<Inventory> findByExpirationDateLessThan(LocalDate expirationDate);
 }

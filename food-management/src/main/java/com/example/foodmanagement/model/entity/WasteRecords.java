@@ -21,8 +21,8 @@ public class WasteRecords {
 	private Long id;
 	
 	@ManyToOne
-	@JoinColumn(name = "food_item_id")
-	private FoodItems foodItemId;
+	@JoinColumn(name = "inventory_id")
+	private Inventory inventory;
 	
 	@Column(name = "wasted_date")
 	private LocalDate wastedDate;

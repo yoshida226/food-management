@@ -13,21 +13,31 @@ import jakarta.persistence.Table;
 import lombok.Data;
 
 @Entity
-@Table(name = "consumption_records")
+@Table(name = "inventory")
 @Data
-public class ConsumptionRecords {
+public class Inventory {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	
+	private Double quantity;
+	
+	@Column(name = "purchase_date")
+	private LocalDate purchaseDate;
+	
+	@Column(name = "expiration_date")
+	private LocalDate expirationDate;
+	
+	@Column(name = "storage_method")
+	private String storageMethod;
+	
 	@ManyToOne
-	@JoinColumn(name = "inventory_id")
-	private Inventory inventory;
+	@JoinColumn(name = "food_master_id")
+	private Categories foodMaster;
 	
-	@Column(name = "consumed_date")
-	private LocalDate consumedDate;
+	@ManyToOne
+	@JoinColumn(name = "user_id")
+	private Users user;
 	
-	private Double amount;
-
-	private String note;
+	private String status;
 }
