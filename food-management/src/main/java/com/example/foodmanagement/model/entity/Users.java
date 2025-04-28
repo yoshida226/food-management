@@ -13,11 +13,15 @@ import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
 
-import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 
 @Entity
 @Table(name = "users")
-@Data
+@Getter
+@Setter
+@EqualsAndHashCode(exclude = "stockFood")
 public class Users {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -42,4 +46,5 @@ public class Users {
         inverseJoinColumns = @JoinColumn(name = "food_master_id")
     )
     private Set<FoodMaster> stockFood = new HashSet<>();
+	
 }

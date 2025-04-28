@@ -12,11 +12,15 @@ import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
-import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 
 @Entity
 @Table(name = "food_master")
-@Data
+@Getter
+@Setter
+@EqualsAndHashCode(exclude = "user")
 public class FoodMaster {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,4 +36,5 @@ public class FoodMaster {
 	
 	@ManyToMany(mappedBy = "stockFood")
     private Set<Users> user = new HashSet<>();
+
 }

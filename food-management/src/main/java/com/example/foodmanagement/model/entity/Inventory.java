@@ -10,11 +10,15 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
-import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 
 @Entity
 @Table(name = "inventory")
-@Data
+@Getter
+@Setter
+@EqualsAndHashCode
 public class Inventory {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,11 +37,12 @@ public class Inventory {
 	
 	@ManyToOne
 	@JoinColumn(name = "food_master_id")
-	private Categories foodMaster;
+	private FoodMaster foodMaster;
 	
 	@ManyToOne
 	@JoinColumn(name = "user_id")
 	private Users user;
 	
 	private String status;
+	
 }
