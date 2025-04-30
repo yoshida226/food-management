@@ -17,7 +17,7 @@ public class SecurityConfig {
     	System.out.println("UserDetailsServiceImpl_test1");
         http
             .authorizeHttpRequests(authorize -> authorize
-                .requestMatchers("/", "/login", "/signup", "/css/**", "/js/**").permitAll()
+                .requestMatchers("/login", "/signup", "/css/**", "/js/**").permitAll()
                 .anyRequest().authenticated()
             )
             .formLogin(form -> form
