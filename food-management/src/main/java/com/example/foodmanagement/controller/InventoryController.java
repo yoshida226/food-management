@@ -70,5 +70,13 @@ public class InventoryController {
 	    inventoryService.update(id, payload);
 	    return ResponseEntity.ok().build();
 	}
+	
+	//登録
+	@GetMapping("register")
+	public String showRegisterForm(Model model) {
+		
+		
+		return "inventory/register";
+	}
 
 }

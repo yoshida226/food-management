@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <div th:replace="~{fragment :: head}"></div>
+	<meta name="_csrf" th:content="${_csrf.token}"/>
+	<meta name="_csrf_header" th:content="${_csrf.headerName}">
+</head>ta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+	<div class="container mt-5">
+	    <h2 class="mb-4">購入食品登録</h2>
+
+	    <form th:action="@{/purchases/register}" method="post">
+	        <!-- カテゴリー -->
+	        <div class="mb-3">
+	            <label for="category" class="form-label">カテゴリー</label>
+	            <select id="category" name="categoryId" class="form-select" required>
+	                <option value="">選択してください</option>
+	                <th:block th:each="category : ${categories}">
+	                    <option th:value="${category.id}" th:text="${category.name}"></option>
+	                </th:block>
+	            </select>
+	        </div>
+
+	        <!-- 食材 -->
+	        <div class="mb-3">
+	            <label for="ingredient" class="form-label">食材名</label>
+	            <select id="ingredient" name="ingredientId" class="form-select" required>
+	                <option value="">カテゴリーを選択してください</option>
+	            </select>
+	        </div>
+
+	        <!-- 購入日 -->
+	        <div class="mb-3">
+	            <label for="purchaseDate" class="form-label">購入日</label>
+	            <input type="date" id="purchaseDate" name="purchaseDate" class="form-control" required>
+	        </div>
+
+	        <!-- 賞味・消費期限 -->
+	        <div class="mb-3">
+	            <label for="expiryDate" class="form-label">賞味・消費期限</label>
+	            <input type="date" id="expiryDate" name="expiryDate" class="form-control" required>
+	        </div>
+
+	        <!-- 量 -->
+	        <div class="mb-3">
+	            <label for="quantity" class="form-label">量</label>
+	            <div class="input-group">
+	                <input type="number" id="quantity" name="quantity" class="form-control" min="0" required>
+	                <span class="input-group-text">g / ml / 個</span>
+	            </div>
+	        </div>
+
+	        <!-- 登録ボタン -->
+	        <button type="submit" class="btn btn-primary">登録</button>
+	    </form>
+	</div>
+	<!-- ナビゲーションバー -->
+	<div th:replace="~{fragment :: nav}"></div>
+	<!-- フッター -->
+	  	<div th:fragment="footer" th:remove="tag">
+	  	<!-- js -->
+		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+	  	<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+	  	<div th:fragment="js" th:remove="tag">
+<!--	  	<script th:src="@{/js/history.js}"></script>-->
+		<script>
+		    document.getElementById("category").addEventListener("change", function () {
+		        const categoryId = this.value;
+		        const ingredientSelect = document.getElementById("ingredient");
+
+		        ingredientSelect.innerHTML = '<option value="">読み込み中...</option>';
+
+		        if (!categoryId) {
+		            ingredientSelect.innerHTML = '<option value="">カテゴリーを選択してください</option>';
+		            return;
+		        }
+
+		        fetch(`/ingredients?categoryId=${categoryId}`)
+		            .then(response => response.json())
+		            .then(data => {
+		                ingredientSelect.innerHTML = '';
+		                data.forEach(ingredient => {
+		                    const option = document.createElement("option");
+		                    option.value = ingredient.id;
+		                    option.textContent = ingredient.name;
+		                    ingredientSelect.appendChild(option);
+		                });
+		            })
+		            .catch(error => {
+		                ingredientSelect.innerHTML = '<option value="">読み込み失敗</option>';
+		                console.error('Error loading ingredients:', error);
+		            });
+		    });
+		</script>
+	</body>
+</html>
