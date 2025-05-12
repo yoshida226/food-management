@@ -29,7 +29,7 @@ public class HistoryController {
 	@GetMapping("/history-data")
 	@ResponseBody
 	public List<Map<String, Object>> getListData(@RequestParam(name = "option", required = false) String option,
-																 @AuthenticationPrincipal UserDetailsImpl userDetailsImpl) {
+												 @AuthenticationPrincipal UserDetailsImpl userDetailsImpl) {
 		
 		Users user = userDetailsImpl.getUser();
 		List<Map<String, Object>> data = historyService.getDataByOption(option == null ? "consumption" : option, user);

@@ -2,20 +2,18 @@
 <html lang="ja" xmlns:th="http://www.thymeleaf.org">
 <head>
     <div th:replace="~{fragment :: head}"></div>
-	<meta name="_csrf" th:content="${_csrf.token}"/>
-	<meta name="_csrf_header" th:content="${_csrf.headerName}">
-</head>ta charset="UTF-8">
-<title>Insert title here</title>
 </head>
 <body>
+<!-- ナビゲーションバー -->
+<div th:replace="~{fragment :: nav}"></div>
 	<div class="container mt-5">
 	    <h2 class="mb-4">購入食品登録</h2>
 
-	    <form th:action="@{/purchases/register}" method="post">
+	    <form th:action="@{/inventory/register}" method="post" th:object=${registerInventoryForm}>
 	        <!-- カテゴリー -->
 	        <div class="mb-3">
 	            <label for="category" class="form-label">カテゴリー</label>
-	            <select id="category" name="categoryId" class="form-select" required>
+	            <select id="category" name="categoryId" class="form-select" th:field="*{categoryId}">
 	                <option value="">選択してください</option>
 	                <th:block th:each="category : ${categories}">
 	                    <option th:value="${category.id}" th:text="${category.name}"></option>
@@ -25,29 +23,43 @@
 
 	        <!-- 食材 -->
 	        <div class="mb-3">
-	            <label for="ingredient" class="form-label">食材名</label>
-	            <select id="ingredient" name="ingredientId" class="form-select" required>
-	                <option value="">カテゴリーを選択してください</option>
+	            <label for="food" class="form-label">食材名</label>
+				<p class="error-message" th:if="${#fields.hasErrors('foodMasterId')}" th:errors="*{foodMasterId}"></p>
+	            <select id="food" name="foodMasterId" class="form-select"
+						th:field="*{foodMasterId}"
+						th:attr="data-selected=${registerInventoryForm.foodMasterId}">
+	                <option value="" th:field="*{foodMasterId}">カテゴリーを選択してください</option>
 	            </select>
 	        </div>
 
 	        <!-- 購入日 -->
 	        <div class="mb-3">
 	            <label for="purchaseDate" class="form-label">購入日</label>
-	            <input type="date" id="purchaseDate" name="purchaseDate" class="form-control" required>
+	            <input type="date" id="purchaseDate" name="purchaseDate" class="form-control" th:field="*{purchaseDate}">
 	        </div>
 
 	        <!-- 賞味・消費期限 -->
 	        <div class="mb-3">
-	            <label for="expiryDate" class="form-label">賞味・消費期限</label>
-	            <input type="date" id="expiryDate" name="expiryDate" class="form-control" required>
+	            <label for="expirationDate" class="form-label">賞味・消費期限</label>
+				<p class="error-message" th:if="${#fields.hasErrors('expirationDate')}" th:errors="*{expirationDate}"></p>
+	            <input type="date" id="expirationDate" name="expirationDate" class="form-control" th:field="*{expirationDate}">
 	        </div>
+
+			<!-- 保存方法 -->
+			<div class="mb-3">
+			    <label for="storageMethod" class="form-label">保存方法</label>
+				<p class="error-message" th:if="${#fields.hasErrors('storageMethod')}" th:errors="*{storageMethod}"></p>
+			    <div class="input-group">
+			        <input type="text" id="storageMethod" name="storageMethod" class="form-control" th:field="*{storageMethod}">
+			    </div>
+			</div>
 
 	        <!-- 量 -->
 	        <div class="mb-3">
 	            <label for="quantity" class="form-label">量</label>
+				<p class="error-message" th:if="${#fields.hasErrors('quantity')}" th:errors="*{quantity}"></p>
 	            <div class="input-group">
-	                <input type="number" id="quantity" name="quantity" class="form-control" min="0" required>
+	                <input type="number" id="quantity" name="quantity" class="form-control" th:field="*{quantity}">
 	                <span class="input-group-text">g / ml / 個</span>
 	            </div>
 	        </div>
@@ -56,8 +68,6 @@
 	        <button type="submit" class="btn btn-primary">登録</button>
 	    </form>
 	</div>
-	<!-- ナビゲーションバー -->
-	<div th:replace="~{fragment :: nav}"></div>
 	<!-- フッター -->
 	  	<div th:fragment="footer" th:remove="tag">
 	  	<!-- js -->
@@ -66,33 +76,60 @@
 	  	<div th:fragment="js" th:remove="tag">
 <!--	  	<script th:src="@{/js/history.js}"></script>-->
 		<script>
-		    document.getElementById("category").addEventListener("change", function () {
-		        const categoryId = this.value;
-		        const ingredientSelect = document.getElementById("ingredient");
+		    document.addEventListener("DOMContentLoaded", function () {
+		        const categorySelect = document.getElementById("category");
+		        const foodSelect = document.getElementById("food");
+		        const selectedFoodId = foodSelect.getAttribute("data-selected"); // バリデーション後の選択保持用
+		
+		        function loadFoods(categoryId, selectedFoodId = null) {
+		            if (!categoryId) {
+		                foodSelect.innerHTML = '<option value="">カテゴリーを選択してください</option>';
+		                return;
+		            }
+		
+		            foodSelect.innerHTML = '<option value="">読み込み中...</option>';
+		
+		            fetch(`/inventory/food?categoryId=${categoryId}`)
+		                .then(response => response.json())
+		                .then(data => {
+		                    foodSelect.innerHTML = '';
+						
+							const defaultOption = document.createElement("option");
+							defaultOption.value = '';
+							defaultOption.textContent = '選択してください';
+							foodSelect.appendChild(defaultOption);
 
-		        ingredientSelect.innerHTML = '<option value="">読み込み中...</option>';
-
-		        if (!categoryId) {
-		            ingredientSelect.innerHTML = '<option value="">カテゴリーを選択してください</option>';
-		            return;
-		        }
-
-		        fetch(`/ingredients?categoryId=${categoryId}`)
-		            .then(response => response.json())
-		            .then(data => {
-		                ingredientSelect.innerHTML = '';
-		                data.forEach(ingredient => {
-		                    const option = document.createElement("option");
-		                    option.value = ingredient.id;
-		                    option.textContent = ingredient.name;
-		                    ingredientSelect.appendChild(option);
+		                    data.forEach(food => {
+		                        const option = document.createElement("option");
+		                        option.value = food.id;
+		                        option.textContent = food.name;
+		
+		                        // 選択状態を復元
+		                        if (selectedFoodId && food.id.toString() === selectedFoodId) {
+		                            option.selected = true;
+		                        }
+		
+		                        foodSelect.appendChild(option);
+		                    });
+		                })
+		                .catch(error => {
+		                    foodSelect.innerHTML = '<option value="">読み込み失敗</option>';
+		                    console.error('Error loading foods:', error);
 		                });
-		            })
-		            .catch(error => {
-		                ingredientSelect.innerHTML = '<option value="">読み込み失敗</option>';
-		                console.error('Error loading ingredients:', error);
-		            });
+		        }
+		
+		        // 初期ロード時、categoryId が空でなければ呼び出す
+		        if (categorySelect.value) {
+		            loadFoods(categorySelect.value, selectedFoodId);
+					console.log(selectedFoodId);
+		        }
+		
+		        // ユーザーがカテゴリーを変更した場合
+		        categorySelect.addEventListener("change", function () {
+		            loadFoods(this.value);
+		        });
 		    });
 		</script>
+
 	</body>
 </html>

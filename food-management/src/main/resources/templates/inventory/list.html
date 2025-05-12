@@ -10,8 +10,9 @@
 	<div th:replace="~{fragment :: nav}"></div>
 		<div class="container-fluid px-3 mt-5">
 	    <h2>食材在庫一覧</h2>
+		<div th:if="${successMessage}" class="alert alert-primary" role="alert" th:text="${successMessage}"></div>
 	    <div class="text-end mb-3">
-	        <a th:href="@{/inventory/add}" class="btn btn-success">追加</a>
+	        <a th:href="@{/inventory/register}" class="btn btn-success">追加</a>
 	    </div>
 	
 	    <table class="table table-bordered align-middle">
