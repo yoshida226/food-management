@@ -12,7 +12,7 @@ import com.example.foodmanagement.model.entity.Users;
 
 @Repository
 public interface FoodMasterRepository extends JpaRepository<FoodMaster, Long> {
-	public List<FoodMaster> findByUser(Users user);
+	public List<FoodMaster> findByStockUsers(Users user);
 	public List<FoodMaster> findByIdIn(List<Long> ids);
 	
 	@Query(value = "SELECT fm FROM FoodMaster AS fm WHERE fm.category.id = :categoryId")

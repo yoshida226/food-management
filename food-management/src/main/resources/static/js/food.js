@@ -19,33 +19,30 @@ $(document).ready(function() {
 
         var data = {
             name: $row.find('.name input').val(),
-            category: $row.find('.category select option').val(),
+            categoryId: $row.find('.category select option:selected').val(),
+			categoryName: $row.find('.category select option:selected').text().trim(),
             unit: $row.find('.unit input').val()
         };
 
-        // Ajaxで保存（ここはURLを適宜変更）
-        $.ajax({
-            url: `/inventory/update/${id}`,
-            type: 'POST',
-            contentType: 'application/json',
-            data: JSON.stringify(data),
-			headers: {
-	            "X-CSRF-TOKEN": $("meta[name='_csrf']").attr("content")
-	        },
-            success: function(response) {
-			    $row.find('.storageMethod').text(data.storageMethod);
-			    $row.find('.purchaseDate').text(data.purchaseDate);
-			    $row.find('.expirationDate').text(data.expirationDate);
-			    $row.find('.quantity').text(data.quantity);
-			    $row.find('.save-btn').addClass('d-none');
-			    $row.find('.edit-btn').removeClass('d-none');
-				alert("更新を保存しました");
-            },
-            error: function(error) {
-                alert('保存に失敗しました');
-            }
-        });
+        // Ajaxで保存
+		const url = `/food-master/update/${id}`;
 		
+		const successFunction = function() {
+			$row.find('.name').text(data.name);
+		    $row.find('.category').text(data.categoryName);
+		    $row.find('.unit').text(data.unit);
+		    $row.find('.save-btn').addClass('d-none');
+		    $row.find('.edit-btn').removeClass('d-none');
+			alert("更新を保存しました");
+		}
+		
+		const errorFunction = function() {
+			alert('保存に失敗しました');
+		}
+		
+		sendPostAjax(url, data, successFunction, errorFunction);
+		
+		//編集モードから元に戻す
 		revertRowFromEditable($row);
 		$row.removeClass("edit-mode");
         $row.find(".view-mode").removeClass("d-none");
@@ -56,48 +53,31 @@ $(document).ready(function() {
 		$row.find('.edit-btn').removeClass('d-none');
     });
 	
-	function sendPostAjax(url, successMessage, data) {
-        $.ajax({
-            type: "POST",
-            url: url,
-			contentType: "application/json",
-			data: data,
-            headers: {
-                "X-CSRF-TOKEN": $("meta[name='_csrf']").attr("content") // Spring Security用
-            },
-            success: function () {
-                alert(successMessage);
-                location.reload(); // 成功後リロードして状態反映
-            },
-            error: function () {
-                alert("エラーが発生しました。");
-            }
-        });
-    }
-
-    $(".consume-btn").on("click", function () {
-        const id = $(this).closest("tr").data("id");
-        const url = `/inventory/consume/${id}`;
-        sendPostAjax(url, "消費処理が完了しました。", null);
-    });
-
-	
 	let selectedId = null;
 	
 	// 削除ボタンを押したときにIDを保持
-    $(".discard-btn").on("click", function () {
+    $(".delete-btn").on("click", function () {
         selectedId = $(this).data("id");
     });
 	
 	// 確認モーダルの「削除する」ボタン
-    $("#confirmDiscardBtn").on("click", function () {
+    $("#confirmDeleteBtn").on("click", function () {
         if (!selectedId) return;
 		
-		const reason = $("#discardReason").val();
-        const url = `/inventory/discard/${selectedId}`;
-        sendPostAjax(url, "削除が完了しました。", JSON.stringify({ reason: reason }));
+        const url = `/food-master/delete/${selectedId}`;
+
+		const successFunction = function() {
+			alert("削除に成功しました");
+		}
+
+		const errorFunction = function() {
+			alert('削除に失敗しました');
+		}
+
+        sendPostAjax(url, null, successFunction, errorFunction);
     });
 	
+	//編集モードにする関数
 	function convertRowToEditable($row) {
 	    // 保存元データ
 	    const name = $row.find('.name').text().trim();
@@ -123,6 +103,7 @@ $(document).ready(function() {
 	    $row.find('.save-btn, .cancel-btn').removeClass('d-none');
 	}
 
+	//編集モードから戻す関数
 	function revertRowFromEditable($row) {
 	    // 元の値を属性から取得
 	    const name = $row.find('.name').attr('data-original');
@@ -160,5 +141,19 @@ $(document).ready(function() {
 	    return optionsHtml;
 	}
 
+	//Ajax通信メソッド
+	function sendPostAjax(url, data, successFunction, errorFunction) {
+		$.ajax({
+	        url: url,
+	        type: 'POST',
+	        contentType: 'application/json',
+	        data: JSON.stringify(data),
+			headers: {
+	            "X-CSRF-TOKEN": $("meta[name='_csrf']").attr("content")
+	        },
+	        success: successFunction,
+	        error: errorFunction
+	    });
+	}
 
 });

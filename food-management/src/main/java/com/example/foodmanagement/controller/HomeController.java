@@ -106,7 +106,7 @@ public class HomeController {
 		/*
 		 * ストック対象アイテム残量
 		 */
-		List<FoodMaster> stockFoods = foodMasterRepository.findByUser(user);
+		List<FoodMaster> stockFoods = foodMasterRepository.findByStockUsers(user);
 		List<Inventory> stockFoodsSituation = inventoryRepository.findByFoodMasterIn(stockFoods);
 		
 		model.addAttribute("stockFoodsSituation", stockFoodsSituation);

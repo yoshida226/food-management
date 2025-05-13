@@ -20,7 +20,7 @@ import lombok.Setter;
 @Table(name = "food_master")
 @Getter
 @Setter
-@EqualsAndHashCode(exclude = "user")
+@EqualsAndHashCode(exclude = "users")
 public class FoodMaster {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -34,7 +34,11 @@ public class FoodMaster {
 	@JoinColumn(name = "category_id")
 	private Categories category;
 	
-	@ManyToMany(mappedBy = "stockFood")
-    private Set<Users> user = new HashSet<>();
+//	@ManyToOne
+//	@JoinColumn(name = "user_id")
+//	private Users user;
+	
+	@ManyToMany(mappedBy = "stockFoods")
+    private Set<Users> stockUsers = new HashSet<>();
 
 }

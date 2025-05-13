@@ -21,7 +21,7 @@ import lombok.Setter;
 @Table(name = "users")
 @Getter
 @Setter
-@EqualsAndHashCode(exclude = "stockFood")
+@EqualsAndHashCode(exclude = "stockFoods")
 public class Users {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -45,6 +45,6 @@ public class Users {
         joinColumns = @JoinColumn(name = "user_id"),
         inverseJoinColumns = @JoinColumn(name = "food_master_id")
     )
-    private Set<FoodMaster> stockFood = new HashSet<>();
+    private Set<FoodMaster> stockFoods = new HashSet<>();
 	
 }
